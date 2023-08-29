@@ -6,8 +6,10 @@ kinRelations <- function(file) {
   tots <- a$x
   
   ### set up dataset by host for pc and ps
-  kin <- matrix(data = NA, nrow = host, ncol = 13)
-  colnames(kin) <- c("host", "number of worms", "number of clonemates", "number of sibs", "number unrelated", "total number pairwise", "mating_clones", "mating_siblings", "diff", "Pc", "Ps", "unrelated#","x")
+  kin <- matrix(data = NA, nrow = host, ncol = 15)
+  colnames(kin) <- c("host", "number of worms", "number of clonemates", "number of sibs", 
+                     "number unrelated", "total number pairwise", "Clonemate.dyads", "faux_sib.dyads", 
+                     "Sib.dyads", "Pc", "Ps", "unrelated#","x", "unrelated.clonemates.sibs", "14equalstotal")
   kin[, 1] <- a$Group.1
   kin[, 2] <- a$x
   
@@ -54,7 +56,7 @@ kinRelations <- function(file) {
   kin[, 7] <- (kin[, 3] * (kin[, 3] - 1)) / 2  ### counts clonal pairwise comparisons
   kin[, 8] <- (kin[, 4] * (kin[, 4] - 1)) / 2  ### counts sibling pairwise comparisons
   kin[, 9] <- kin[, 8] - kin[, 7]
-  kin[,9][kin[,9] < 0] <-0
+  #kin[,9][kin[,9] < 0] <-0
   
   ##pc * intenstiy
   kin[, 10] <- (kin[, 7]/kin[, 6]) * kin[, 2] #### average within host pc times the intensity
@@ -67,13 +69,26 @@ kinRelations <- function(file) {
   ps_weighted <- sum(kin[, 11]) / sum(f) ### weighted average ps by host
   
   kin[,12] <- (kin[,5]*(kin[,2]-1))-((kin[,5]*(kin[,5]-1))/2)
-  kin[,13] <- (kin[,5]*(kin[,4]))/((kin[,5]*(kin[,5]-1))/2)
+  kin[,13] <- (kin[,5]*(kin[,4]))+((kin[,5]*(kin[,5]-1))/2)
   
+  kin[,14] <- kin[,13]+kin[,9]+kin[,7]
+  kin[,15] <- kin[,14]==kin[,6]
   ###total pairwise comparisons of parasites of component pop
   pair.comp <- (sum(kin[,2]) *(sum(kin[,2])-1))/2 
   
-  pec <- sum(kin[,7])/sum(f)
-  return(list(pc_weighted = pc_weighted, ps_weighted = ps_weighted, pec = pec))
+  e <-relation$Clonal.Group
+  e_counts <- as.numeric(table(e))
+  tot.clone <- e_counts[e_counts > 1]
+  tot.clone.pairwise <- sum(tot.clone*(tot.clone -1)/2)
+  pec <- tot.clone.pairwise/(sum(kin[,2])*(sum(kin[,2])-1)/2)
   
+  g <-relation$Sibling.Group
+  g_counts <- as.numeric(table(g))
+  tot.sib <- g_counts[g_counts > 1]
+  tot.sib.pairwise <- sum(tot.sib*(tot.sib -1)/2)
+  pes <- tot.sib.pairwise/(sum(kin[,2])*(sum(kin[,2])-1)/2)
+  
+  #pec <- sum(kin[,7])/sum(kin[,2])
+  return(list(pc_weighted = pc_weighted, ps_weighted = ps_weighted, pec = pec, pes = pes))
   
 }
