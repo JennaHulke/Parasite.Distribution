@@ -1,4 +1,4 @@
-###simulations for running function.kin.distribution
+### simulations for running function.kin.distribution
 ### this takes the observed data, creates random distribution of clones/siblings
 ### with given intensities per host
 ### simulations done without replacement
