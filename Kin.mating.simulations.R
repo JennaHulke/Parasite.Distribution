@@ -4,13 +4,13 @@
 ### simulations done without replacement
 
 obs.data <- read.csv("test.csv")
-
+source("function.kin.distribution.R") #required to run the kinRelations function
 ### get pc and ps for observed data
 results_obs <- kinRelations(obs.data)
 
 sample.host <- obs.data[,1]##IDs number of parasites found within host by host ID, repeated numbers are multiple parasites within the host
 
-sim.data <- matrix(data= NA, nrow= nrow(obs.data), ncol = 4)
+sim.data <- data.frame(matrix(data= NA, nrow= nrow(obs.data), ncol = 4))
 colnames(sim.data) <-c("host.ID", "parasite.ID", "Clonal.Group", "Sibling.Group")
 sim.data[,2] <- obs.data[,2]
 sim.data[,3] <- obs.data[,3]
